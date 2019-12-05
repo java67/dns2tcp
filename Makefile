@@ -1,26 +1,36 @@
+# main
 CC = gcc
-CFLAGS = -std=c99 -Wall -Wextra -O3 -pthread
-INCLUDES =
-LDFLAGS =
-LIBS = -luv
+CFLAGS = -std=c99 -Wall -Wextra -O3
 SRCS = netutils.c dns2tcp.c
 OBJS = $(SRCS:.c=.o)
 MAIN = dns2tcp
 DESTDIR = /usr/local/bin
 
-.PHONY: all install clean
+# libev
+EVCC = $(CC)
+EVCFLAGS = -O3 -w
+EVSRC = libev/ev.c
+EVOBJ = ev.o
+EVLIBS = -lm
 
+.PHONY: all
 all: $(MAIN)
 
+.PHONY: clean
+clean:
+	$(RM) *.o $(MAIN)
+
+.PHONY: install
 install: $(MAIN)
 	mkdir -p $(DESTDIR)
 	install -m 0755 $(MAIN) $(DESTDIR)
 
-clean:
-	$(RM) *.o $(MAIN)
+$(MAIN): $(OBJS) $(EVOBJ)
+	$(CC) $(CFLAGS) -s -o $(MAIN) $(OBJS) $(EVOBJ) $(EVLIBS)
 
-$(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -s -o $(MAIN) $(OBJS) $(LDFLAGS) $(LIBS)
+# OBJS
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+$(EVOBJ): $(EVSRC)
+	$(EVCC) $(EVCFLAGS) -c $(EVSRC) -o $(EVOBJ)
