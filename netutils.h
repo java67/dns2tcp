@@ -21,18 +21,17 @@ typedef struct sockaddr_in  skaddr4_t;
 typedef struct sockaddr_in6 skaddr6_t;
 
 /* AF_INET or AF_INET6 or -1(invalid) */
-int get_ipstr_family(const char *ipstr);
+int get_ipstr_addrfamily(const char *ipstr);
 
 /* before calling, please memset(skaddr) to 0 */
 void build_skaddr4_from_ipport(skaddr4_t *skaddr, const char *ipstr, portno_t portno);
 void build_skaddr6_from_ipport(skaddr6_t *skaddr, const char *ipstr, portno_t portno);
 
-void parse_ipport_from_skaddr4(const skaddr4_t *skaddr, char *ipstr, portno_t *portno);
-void parse_ipport_from_skaddr6(const skaddr6_t *skaddr, char *ipstr, portno_t *portno);
+void parse_ipport_from_skaddr4(char *ipstr, portno_t *portno, const skaddr4_t *skaddr);
+void parse_ipport_from_skaddr6(char *ipstr, portno_t *portno, const skaddr6_t *skaddr);
 
-void make_socket_nonblocking(int sockfd);
-void set_socketopt_ipv6_only(int sockfd);
-void set_socketopt_reuse_addr(int sockfd);
+void make_socket_non_blocking(int sockfd);
+void set_socketopt_ipv6_v6only(int sockfd);
 void set_socketopt_tcp_nodelay(int sockfd);
 
 #endif
