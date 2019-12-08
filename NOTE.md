@@ -143,8 +143,5 @@ ev_timer_again(loop, timer); //重置定时器
 **SO_REUSEADDR** 详解：
 // TODO
 
-**SO_REUSEPORT** 详解：
-// TODO
-
 **TCP_FASTOPEN** 详解：
 // TODO
