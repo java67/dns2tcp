@@ -116,3 +116,13 @@ ev_timer_again(loop, timer); //注意不使用start，而是使用again启动/�
 ev_timer_again(loop, timer); //重置定时器
 ```
 使用方式比第一种原始方法更加简单，且性能也更优异。因为不需要频繁从定时器堆中移除、添加、移除、添加。
+
+# socket option
+- IPV6_V6ONLY：监听地址为 `::` 时，不监听 `0.0.0.0` ipv4通配地址，仅监听 `::` ipv6通配地址。
+- SO_REUSEADDR：地址重用，TCP 监听套接字必备，UDP 套接字如果需要临时偷用端口，也请使用此选项。
+- SO_REUSEPORT：端口重用，内核级别的负载均衡，注意使用前请先检查系统是否支持，貌似是 v3.9+ 才有。
+- TCP_NODELAY：TCP 连接套接字必备，禁用 nagle 算法。影响：当我们调用 send() 时，尽快将数据发送给对方。
+- TCP_QUICKACK：TCP 连接套接字必备，禁用 delayed ack。影响：本端收到 tcp-segment 时，尽快将 ACK 发给对方。
+- TCP_SYNCNT：仅限 Linux 系统，可以用来设置 connect 的超时时间，默认超时时间太长了，强烈建议设置此选项来修改。
+- SO_LINGER：用于 TCP 连接套接字，用来产生 TCP-RST 效果，即：启用 so_linger 并将超时时间设为 0，然后调用 close()。
+- TCP_FASTOPEN：TCP 快速连接，仅内核 3.7+ 以上支持，同时需要设置内核选项，其值设置为 3 表示支持客户端和服务端的 TFO。
