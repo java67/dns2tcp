@@ -139,3 +139,12 @@ ev_timer_again(loop, timer); //重置定时器
 可以看到内核总共会尝试发送 7 次 SYN 报文，如果仍然未收到 SYN+ACK 报文，则告知应用层，发送连接超时(Connection timed out)，超时时间有点长。
 我们可以通过 `net.ipv4.tcp_syn_retries` 内核选项来全局调整重试次数，Linux 的默认重试次数为 6，因此默认超时时间为 1+2+4+8+16+32+64=127 秒。
 很多时候我们并没有权限去修改内核参数，好在可以通过 TCP_SYNCNT 套接字选项来设置给定 socket 的 SYN 重试次数，比如改为 2，即 1 + 2 + 4 = 7 秒。
+
+**SO_REUSEADDR** 详解：
+// TODO
+
+**SO_REUSEPORT** 详解：
+// TODO
+
+**TCP_FASTOPEN** 详解：
+// TODO
