@@ -1,3 +1,6 @@
 *.o
 *.gch
 dns2tcp
+test.c
+test
+a.out
