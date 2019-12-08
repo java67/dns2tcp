@@ -141,6 +141,12 @@ ev_timer_again(loop, timer); //重置定时器
 很多时候我们并没有权限去修改内核参数，好在可以通过 TCP_SYNCNT 套接字选项来设置给定 socket 的 SYN 重试次数，比如改为 2，即 1 + 2 + 4 = 7 秒。
 
 **SO_REUSEADDR** 详解：
+未启用 SO_REUSEADDR（默认）：
+- 不允许多个 TCP/UDP 套接字绑定到相同的本地 ip+port。比如不允许两个 socket 都绑定到 `127.0.0.1:5555/tcp` 本地地址，当第二个 socket 尝试绑定相同地址时，将提示地址被占用。
+- time_wait 状态的套接字，内核认为它仍处于使用状态。如果有一个 time_wait 状态且本地地址为 `127.0.0.1:5555/tcp` 的 socket，则不允许第二个 socket 绑定到 `127.0.0.1:5555/tcp`。
+
+启用了 SO_REUSEADDR：
+- 允许多个 TCP/UDP 套接字绑定到相同的 ip+port，比如允许两个 socket 都绑定到 `127.0.0.1:5555/tcp` 地址。但是不允许它们连接到相同的对端 ip+port（5 元组必须唯一，否则无法区分）。
 // TODO
 
 **TCP_FASTOPEN** 详解：
