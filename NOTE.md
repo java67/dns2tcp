@@ -142,12 +142,33 @@ ev_timer_again(loop, timer); //重置定时器
 
 **SO_REUSEADDR** 详解：
 未启用 SO_REUSEADDR（默认）：
-- 不允许多个 TCP/UDP 套接字绑定到相同的本地 ip+port。比如不允许两个 socket 都绑定到 `127.0.0.1:5555/tcp` 本地地址，当第二个 socket 尝试绑定相同地址时，将提示地址被占用。
-- time_wait 状态的套接字，内核认为它仍处于使用状态。如果有一个 time_wait 状态且本地地址为 `127.0.0.1:5555/tcp` 的 socket，则不允许第二个 socket 绑定到 `127.0.0.1:5555/tcp`。
+- 不允许多个 socket 具有相同的 local_address（ip + port，下同）。
+- 内核同等对待 time_wait 状态的 tcp_socket 与其它状态的 tcp_socket。
 
 启用了 SO_REUSEADDR：
-- 允许多个 TCP/UDP 套接字绑定到相同的 ip+port，比如允许两个 socket 都绑定到 `127.0.0.1:5555/tcp` 地址。但是不允许它们连接到相同的对端 ip+port（5 元组必须唯一，否则无法区分）。
-// TODO
+- 允许多个 socket 具有相同的 local_address，但不允许它们具有相同的 peer_address（time_wait状态的socket特殊点，见下）。
+- 假设系统当前存在一个 `protocol=tcp; state=time_wait; local_address=A; peer_address=B` socket，则允许出现下面两种情况：
+  - 允许多个 socket 具有与之相同的 local_address，但这些 socket 的 peer_address 都是不同的，这实际上就是上面的第一条规则。
+  - 允许这么一个 socket：`protocol=tcp; state=non_time_wait; local_address=A; peer_address=B`，它会“顶替”time_wait的socket。
+
+对于 TCP 监听套接字，无论是否启用 SO_REUSEADDR，都不允许多个 TCP 监听套接字绑定到相同的 local_address，为什么？你用 netstat/ss 看一下便可知道：
+```
+$ ss -l | grep redis
+tcp  LISTEN  127.0.0.1:8000   0.0.0.0:*  users:(("redis-server",pid=419,fd=4))
+```
+peer_address 是 `0.0.0.0:*`，即所有对端地址都已被它占用，这符合上述限制：允许多个 socket 具有相同的 local_address，但不允许它们有相同的 peer_address。
+
+对于 UDP 套接字，如果你使用 netstat/ss 查看，会看到 peer_address 也为 `0.0.0.0:*`，但内核允许启用了 SO_REUSEADDR 的多个 udp_socket 绑定到相同的 local_address。
+这些 udp_socket 都可以正常发送 packet，但只有最后创建的 udp_socket 才能收到 packet，当最后创建的 udp_socket 关闭后，倒数第二后创建的 udp_socket 将替代它的地位。
+
+**SO_REUSEPORT** 详解：
+SO_REUSEPORT 选项默认关闭，SO_REUSEPORT 对 TCP 连接套接字没有作用，即只影响 TCP 监听套接字、UDP 套接字。作用如下：
+- 对于 TCP 监听套接字：允许多个 socket 绑定到相同的 local_address，内核会平均分配新连接给不同的 tcp_listen_socket。
+- 对于 UDP 套接字：允许多个 socket 绑定到相同的 local_address，内核会平均分配传入的 udp_packet 给不同的 udp_socket。
+
+**SO_REUSEADDR/SO_REUSEPORT** 总结：
+- 对于 TCP 套接字(监听/连接)，SO_REUSEADDR 建议始终开启。对于 TCP 监听套接字，如果需要多进程/线程负载均衡，请启用 SO_REUSEPORT。
+- 对于 UDP 套接字，SO_REUSEADDR 适用于“临时偷端口”（如 TPROXY-reply 类型的 udp_socket），SO_REUSEPORT 适用于多进程/线程负载均衡。
 
 **TCP_FASTOPEN** 详解：
 // TODO
