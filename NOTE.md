@@ -118,7 +118,7 @@ ev_timer_again(loop, timer); //重置定时器
 使用方式比第一种原始方法更加简单，且性能也更优异。因为不需要频繁从定时器堆中移除、添加、移除、添加。
 
 # socket option
-- IPV6_V6ONLY：监听地址为 `::` 时，不监听 `0.0.0.0` ipv4通配地址，仅监听 `::` ipv6通配地址。
+- IPV6_V6ONLY：严格区分 IPv4 地址和 IPv6 地址，建议对所有 ipv6 socket 启用此选项，避免麻烦。
 - SO_REUSEADDR：地址重用，TCP 监听套接字必备，UDP 套接字如果需要临时偷用端口，也请使用此选项。
 - SO_REUSEPORT：端口重用，内核级别的负载均衡，注意使用前请先检查系统是否支持，貌似是 v3.9+ 才有。
 - SO_LINGER：TCP 连接套接字 RST，使用方式：启用 so_linger 选项并将超时时间设为 0，然后调用 close()。
