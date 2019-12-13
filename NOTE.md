@@ -168,7 +168,7 @@ SO_REUSEPORT 选项默认关闭，SO_REUSEPORT 对 TCP 连接套接字没有作�
 
 **SO_REUSEADDR/SO_REUSEPORT** 总结：
 - 对于 TCP 套接字(监听/连接)，SO_REUSEADDR 建议始终开启。对于 TCP 监听套接字，如果需要多进程/线程负载均衡，请启用 SO_REUSEPORT。
-- 对于 UDP 套接字，SO_REUSEADDR 适用于“临时偷端口”（如 TPROXY-reply 类型的 udp_socket），SO_REUSEPORT 适用于多进程/线程负载均衡。
+- 对于 UDP 套接字，SO_REUSEADDR 适用于“临时偷地址”（如 TPROXY-reply 类型的 udp_socket），SO_REUSEPORT 适用于多进程/线程负载均衡。
 
 > 无论是 SO_REUSEADDR 还是 SO_REUSEPORT，要想达到预期的"重用"效果，必须每个 socket 都设置相应的选项，不能一个设置一个不设置，这样不会生效。
 
