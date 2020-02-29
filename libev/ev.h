@@ -37,6 +37,8 @@
  * either the BSD or the GPL.
  */
 
+#include "mylite.h"
+
 #ifndef EV_H_
 #define EV_H_
 

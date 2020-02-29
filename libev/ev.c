@@ -37,6 +37,8 @@
  * either the BSD or the GPL.
  */
 
+#include "mylite.h"
+
 /* this big block deduces configuration from config.h */
 #ifndef EV_STANDALONE
 # ifdef EV_CONFIG_H
