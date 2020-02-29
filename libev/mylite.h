@@ -1,7 +1,7 @@
 #ifndef MY_LITE_H
 #define MY_LITE_H
 
-/* libev-4.27 */
+/* libev-4.31 */
 #define EV_STANDALONE 1 /* manual configuration */
 #define EV_COMPAT3 0 /* remove compatible code */
 #define EV_VERIFY 0 /* remove verification code */
